@@ -1,0 +1,2734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🥦 Vegetable Grocery Store Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 1.2em;
+      opacity: 0.9;
+    }
+
+    .tab-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      color: #333;
+    }
+
+    .tab-btn:hover {
+      background: white;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .tab-btn.active {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 0.5s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 3px solid #4CAF50;
+    }
+
+    .section-header h2 {
+      color: #333;
+      font-size: 1.8em;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #2196F3;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn-warning {
+      background: #ff9800;
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin: 20px 0;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background: #f8f9fa;
+      font-weight: bold;
+      color: #333;
+      position: sticky;
+      top: 0;
+    }
+
+    tr:hover {
+      background: #f5f5f5;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: #4CAF50;
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .close:hover {
+      color: #f44336;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-card h3 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .stat-card p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .order-items {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .order-item:last-child {
+      border-bottom: none;
+    }
+
+    .relationship-indicator {
+      display: inline-block;
+      padding: 4px 8px;
+      background: #e3f2fd;
+      color: #1976d2;
+      border-radius: 12px;
+      font-size: 0.8em;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .success-message, .error-message {
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      display: none;
+    }
+
+    .success-message {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+
+      .header h1 {
+        font-size: 2em;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .tab-container {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🥦 Vegetable Grocery Store</h1>
+    <p>Interactive Vegetable Store Management System</p>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-container">
+    <button class="tab-btn active" onclick="showTab('dashboard')">📊 Dashboard</button>
+    <button class="tab-btn" onclick="showTab('customers')">👥 Customers</button>
+    <button class="tab-btn" onclick="showTab('vegetables')">🥕 Vegetables</button>
+    <button class="tab-btn" onclick="showTab('suppliers')">🚛 Suppliers</button>
+    <button class="tab-btn" onclick="showTab('orders')">📦 Orders</button>
+    <button class="tab-btn" onclick="showTab('relationships')">📊 Data Insights</button>
+  </div>
+
+  <!-- Dashboard Tab -->
+  <div id="dashboard" class="tab-content active">
+    <div class="section-header">
+      <h2>📊 System Overview</h2>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3 id="totalCustomers">0</h3>
+        <p>Total Customers</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="totalVegetables">0</h3>
+        <p>Vegetables in Stock</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="totalSuppliers">0</h3>
+        <p>Active Suppliers</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="totalOrders">0</h3>
+        <p>Total Orders</p>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <h2>📈 Sales Analytics</h2>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px;">
+      <div style="background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); padding: 20px; border-radius: 10px; color: white;">
+        <h3>🔝 Top Selling Vegetables</h3>
+        <div id="topVegetablesChart" style="height: 200px; margin-top: 15px;"></div>
+      </div>
+
+      <div style="background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%); padding: 20px; border-radius: 10px; color: white;">
+        <h3>📆 Sales Trend</h3>
+        <div id="salesTrendChart" style="height: 200px; margin-top: 15px;"></div>
+      </div>
+    </div>
+
+    <div style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); padding: 20px; border-radius: 10px; color: white; margin-bottom: 20px;">
+      <h3>💰 Revenue by Customer</h3>
+      <div id="revenueByCustomerChart" style="height: 200px; margin-top: 15px;"></div>
+    </div>
+  </div>
+
+  <!-- Customers Tab -->
+  <div id="customers" class="tab-content">
+    <div class="section-header">
+      <h2>👥 Customers Management</h2>
+      <button class="btn btn-primary" onclick="openModal('customerModal')">➕ Add Customer</button>
+    </div>
+
+    <div class="success-message" id="customerSuccess"></div>
+    <div class="error-message" id="customerError"></div>
+
+    <div class="table-container">
+      <table id="customersTable">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Address</th>
+          <th>Orders Count</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Vegetables Tab -->
+  <div id="vegetables" class="tab-content">
+    <div class="section-header">
+      <h2>🥕 Vegetables Inventory</h2>
+      <button class="btn btn-primary" onclick="openModal('vegetableModal')">➕ Add Vegetable</button>
+    </div>
+
+    <div class="success-message" id="vegetableSuccess"></div>
+    <div class="error-message" id="vegetableError"></div>
+
+    <div class="table-container">
+      <table id="vegetablesTable">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Price (₹/kg)</th>
+          <th>Stock Quantity</th>
+          <th>Suppliers</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Suppliers Tab -->
+  <div id="suppliers" class="tab-content">
+    <div class="section-header">
+      <h2>🚛 Suppliers Management</h2>
+      <div>
+        <button class="btn btn-secondary" onclick="openModal('bulkOrderModal')">🛒 Place Bulk Order</button>
+        <button class="btn btn-primary" onclick="openModal('supplierModal')">➕ Add Supplier</button>
+      </div>
+    </div>
+
+    <div class="success-message" id="supplierSuccess"></div>
+    <div class="error-message" id="supplierError"></div>
+
+    <div class="table-container">
+      <table id="suppliersTable">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Contact</th>
+          <th>Vegetables Supplied</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="section-header" style="margin-top: 30px;">
+      <h2>📦 Supplier Orders</h2>
+    </div>
+
+    <div class="table-container">
+      <table id="supplierOrdersTable">
+        <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Supplier</th>
+          <th>Order Date</th>
+          <th>Items Count</th>
+          <th>Total Amount (₹)</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Orders Tab -->
+  <div id="orders" class="tab-content">
+    <div class="section-header">
+      <h2>📦 Orders Management</h2>
+      <button class="btn btn-primary" onclick="openModal('orderModal')">➕ Create Order</button>
+    </div>
+
+    <div class="success-message" id="orderSuccess"></div>
+    <div class="error-message" id="orderError"></div>
+
+    <div class="table-container">
+      <table id="ordersTable">
+        <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Order Date</th>
+          <th>Items Count</th>
+          <th>Total Amount (₹)</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Data Insights Tab -->
+  <div id="relationships" class="tab-content">
+    <div class="section-header">
+      <h2>📊 Advanced Data Insights</h2>
+    </div>
+
+    <div style="background: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%); padding: 25px; border-radius: 10px; margin-bottom: 20px; color: white;">
+      <h3>📈 Business Performance Metrics</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 15px;">
+        <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px; backdrop-filter: blur(5px);">
+          <strong>Inventory Turnover</strong><br>
+          <div id="inventoryTurnoverChart" style="height: 150px; margin-top: 10px;"></div>
+        </div>
+        <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px; backdrop-filter: blur(5px);">
+          <strong>Customer Retention</strong><br>
+          <div id="customerRetentionChart" style="height: 150px; margin-top: 10px;"></div>
+        </div>
+        <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px; backdrop-filter: blur(5px);">
+          <strong>Supplier Performance</strong><br>
+          <div id="supplierPerformanceChart" style="height: 150px; margin-top: 10px;"></div>
+        </div>
+        <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px; backdrop-filter: blur(5px);">
+          <strong>Revenue Growth</strong><br>
+          <div id="revenueGrowthChart" style="height: 150px; margin-top: 10px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="relationshipView"></div>
+  </div>
+</div>
+
+<!-- Customer Modal -->
+<div id="customerModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('customerModal')">&times;</span>
+    <h2 id="customerModalTitle">Add New Customer</h2>
+    <form id="customerForm">
+      <input type="hidden" id="customerId">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="customerName">Full Name *</label>
+          <input type="text" id="customerName" required>
+        </div>
+        <div class="form-group">
+          <label for="customerEmail">Email Address *</label>
+          <input type="email" id="customerEmail" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="customerAddress">Address</label>
+        <textarea id="customerAddress" rows="3"></textarea>
+      </div>
+      <div style="text-align: right; margin-top: 20px;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('customerModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Customer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Vegetable Modal -->
+<div id="vegetableModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('vegetableModal')">&times;</span>
+    <h2 id="vegetableModalTitle">Add New Vegetable</h2>
+    <form id="vegetableForm">
+      <input type="hidden" id="vegetableId">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="vegetableName">Vegetable Name *</label>
+          <input type="text" id="vegetableName" required>
+        </div>
+        <div class="form-group">
+          <label for="vegetablePrice">Price (₹/kg) *</label>
+          <input type="number" id="vegetablePrice" step="0.01" min="0" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="vegetableStock">Stock Quantity (kg) *</label>
+          <input type="number" id="vegetableStock" min="0" required>
+        </div>
+        <div class="form-group">
+          <label for="vegetableSuppliers">Suppliers (Many-to-Many)</label>
+          <select id="vegetableSuppliers" multiple style="height: 120px;">
+          </select>
+          <small style="color: #666;">Hold Ctrl/Cmd to select multiple suppliers</small>
+        </div>
+      </div>
+      <div style="text-align: right; margin-top: 20px;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('vegetableModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Vegetable</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Supplier Modal -->
+<div id="supplierModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('supplierModal')">&times;</span>
+    <h2 id="supplierModalTitle">Add New Supplier</h2>
+    <form id="supplierForm">
+      <input type="hidden" id="supplierId">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="supplierName">Company Name *</label>
+          <input type="text" id="supplierName" required>
+        </div>
+        <div class="form-group">
+          <label for="supplierContact">Contact Information</label>
+          <input type="text" id="supplierContact" placeholder="Phone or Email">
+        </div>
+      </div>
+      <div style="text-align: right; margin-top: 20px;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('supplierModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Supplier</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Order Modal -->
+<div id="orderModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('orderModal')">&times;</span>
+    <h2>Create New Order</h2>
+    <form id="orderForm">
+      <div class="form-group">
+        <label for="orderCustomer">Select Customer *</label>
+        <select id="orderCustomer" required>
+          <option value="">Choose a customer...</option>
+        </select>
+      </div>
+
+      <h3>Order Items</h3>
+      <div id="orderItems">
+        <div class="order-item-row">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Vegetable</label>
+              <select class="order-vegetable" required>
+                <option value="">Choose vegetable...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Quantity (kg)</label>
+              <input type="number" class="order-quantity" min="1" required>
+            </div>
+            <div class="form-group">
+              <label>Price (₹)</label>
+              <input type="number" class="order-price" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin: 20px 0;">
+        <button type="button" class="btn btn-secondary" onclick="addOrderItem()">➕ Add Item</button>
+        <div style="float: right; font-size: 1.2em; font-weight: bold;">
+          Total: ₹<span id="orderTotal">0.00</span>
+        </div>
+        <div style="clear: both;"></div>
+      </div>
+
+      <div style="text-align: right; margin-top: 20px;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('orderModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Create Order</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Order Details Modal -->
+<div id="orderDetailsModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('orderDetailsModal')">&times;</span>
+    <h2>Order Details</h2>
+    <div id="orderDetailsContent"></div>
+  </div>
+</div>
+
+<!-- Bulk Order Modal -->
+<div id="bulkOrderModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('bulkOrderModal')">&times;</span>
+    <h2>Place Bulk Order to Supplier</h2>
+    <form id="bulkOrderForm">
+      <div class="form-group">
+        <label for="bulkOrderSupplier">Select Supplier *</label>
+        <select id="bulkOrderSupplier" required>
+          <option value="">Choose a supplier...</option>
+        </select>
+      </div>
+
+      <h3>Order Items</h3>
+      <div id="bulkOrderItems">
+        <div class="bulk-order-item-row">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Vegetable</label>
+              <select class="bulk-order-vegetable" required>
+                <option value="">Choose vegetable...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Quantity (kg)</label>
+              <input type="number" class="bulk-order-quantity" min="1" value="10" required>
+            </div>
+            <div class="form-group">
+              <label>Price (₹)</label>
+              <input type="number" class="bulk-order-price" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin: 20px 0;">
+        <button type="button" class="btn btn-secondary" onclick="addBulkOrderItem()">➕ Add Item</button>
+        <div style="float: right; font-size: 1.2em; font-weight: bold;">
+          Total: ₹<span id="bulkOrderTotal">0.00</span>
+        </div>
+        <div style="clear: both;"></div>
+      </div>
+
+      <div style="text-align: right; margin-top: 20px;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('bulkOrderModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Place Order</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Supplier Order Details Modal -->
+<div id="supplierOrderDetailsModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('supplierOrderDetailsModal')">&times;</span>
+    <h2>Supplier Order Details</h2>
+    <div id="supplierOrderDetailsContent"></div>
+  </div>
+</div>
+
+<script>
+  // Global data storage (simulating database)
+  let data = {
+    customers: [
+      { id: 1, name: "John Smith", email: "john@email.com", address: "123 Main St, City" },
+      { id: 2, name: "Sarah Johnson", email: "sarah@email.com", address: "456 Oak Ave, Town" },
+      { id: 3, name: "Mike Wilson", email: "mike@email.com", address: "789 Pine Rd, Village" }
+    ],
+    vegetables: [
+      { id: 1, name: "Tomato", price: 45.00, stock: 100, supplierIds: [1, 3] },
+      { id: 2, name: "Onion", price: 25.00, stock: 200, supplierIds: [1, 2] },
+      { id: 3, name: "Carrot", price: 35.00, stock: 150, supplierIds: [2, 3] },
+      { id: 4, name: "Potato", price: 20.00, stock: 300, supplierIds: [1] }
+    ],
+    suppliers: [
+      { id: 1, name: "Fresh Farm Co.", contact: "contact@freshfarm.com" },
+      { id: 2, name: "Green Valley Ltd.", contact: "+1-555-0123" },
+      { id: 3, name: "Organic Harvest", contact: "organic@harvest.com" }
+    ],
+    orders: [
+      {
+        id: 1,
+        customerId: 1,
+        orderDate: "2024-06-20T10:30:00",
+        status: "Delivered",
+        items: [
+          { vegetableId: 1, quantity: 2, price: 90.00 },
+          { vegetableId: 2, quantity: 1, price: 25.00 }
+        ]
+      },
+      {
+        id: 2,
+        customerId: 2,
+        orderDate: "2024-06-20T14:20:00",
+        status: "Processing",
+        items: [
+          { vegetableId: 3, quantity: 3, price: 105.00 }
+        ]
+      }
+    ],
+    supplierOrders: [
+      {
+        id: 1,
+        supplierId: 1,
+        orderDate: "2024-06-19T09:15:00",
+        status: "Delivered",
+        items: [
+          { vegetableId: 1, quantity: 50, price: 1800.00 },
+          { vegetableId: 2, quantity: 100, price: 2000.00 }
+        ]
+      },
+      {
+        id: 2,
+        supplierId: 2,
+        orderDate: "2024-06-20T11:45:00",
+        status: "Pending",
+        items: [
+          { vegetableId: 3, quantity: 75, price: 2100.00 }
+        ]
+      }
+    ]
+  };
+
+  let nextIds = {
+    customer: 4,
+    vegetable: 5,
+    supplier: 4,
+    order: 3,
+    supplierOrder: 3
+  };
+
+  // Tab functionality
+  function showTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+
+    // Show selected tab
+    document.getElementById(tabName).classList.add('active');
+    event.target.classList.add('active');
+
+    // Load data for the selected tab
+    switch(tabName) {
+      case 'dashboard':
+        loadDashboard();
+        break;
+      case 'customers':
+        loadCustomers();
+        break;
+      case 'vegetables':
+        loadVegetables();
+        break;
+      case 'suppliers':
+        loadSuppliers();
+        break;
+      case 'orders':
+        loadOrders();
+        break;
+      case 'relationships':
+        loadRelationships();
+        break;
+    }
+  }
+
+  // Modal functionality
+  function openModal(modalId) {
+    document.getElementById(modalId).style.display = 'block';
+
+    // Load data for specific modals
+    if (modalId === 'vegetableModal') {
+      loadSuppliersForVegetable();
+    } else if (modalId === 'orderModal') {
+      loadCustomersForOrder();
+      loadVegetablesForOrder();
+    } else if (modalId === 'bulkOrderModal') {
+      loadSuppliersForBulkOrder();
+      loadVegetablesForBulkOrder();
+    }
+  }
+
+  function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+    // Reset forms
+    document.querySelector(`#${modalId} form`).reset();
+    if (modalId === 'customerModal') {
+      document.getElementById('customerId').value = '';
+      document.getElementById('customerModalTitle').textContent = 'Add New Customer';
+    } else if (modalId === 'vegetableModal') {
+      document.getElementById('vegetableId').value = '';
+      document.getElementById('vegetableModalTitle').textContent = 'Add New Vegetable';
+    } else if (modalId === 'supplierModal') {
+      document.getElementById('supplierId').value = '';
+      document.getElementById('supplierModalTitle').textContent = 'Add New Supplier';
+    } else if (modalId === 'bulkOrderModal') {
+      // Reset bulk order form to have only one item
+      const bulkOrderItems = document.getElementById('bulkOrderItems');
+      bulkOrderItems.innerHTML = `
+        <div class="bulk-order-item-row">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Vegetable</label>
+              <select class="bulk-order-vegetable" required>
+                <option value="">Choose vegetable...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Quantity (kg)</label>
+              <input type="number" class="bulk-order-quantity" min="1" value="10" required>
+            </div>
+            <div class="form-group">
+              <label>Price (₹)</label>
+              <input type="number" class="bulk-order-price" readonly>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('bulkOrderTotal').textContent = '0.00';
+    }
+  }
+
+  // Dashboard functions
+  function loadDashboard() {
+    document.getElementById('totalCustomers').textContent = data.customers.length;
+    document.getElementById('totalVegetables').textContent = data.vegetables.length;
+    document.getElementById('totalSuppliers').textContent = data.suppliers.length;
+    document.getElementById('totalOrders').textContent = data.orders.length;
+
+    // Generate analytics charts
+    generateTopVegetablesChart();
+    generateSalesTrendChart();
+    generateRevenueByCustomerChart();
+  }
+
+  // Generate Top Vegetables Chart
+  function generateTopVegetablesChart() {
+    const topVegetablesChart = document.getElementById('topVegetablesChart');
+    topVegetablesChart.innerHTML = '';
+
+    // Calculate vegetable sales
+    const vegetableSales = {};
+    data.orders.forEach(order => {
+      order.items.forEach(item => {
+        const vegetableId = item.vegetableId;
+        const vegetable = data.vegetables.find(v => v.id === vegetableId);
+        if (vegetable) {
+          if (!vegetableSales[vegetable.name]) {
+            vegetableSales[vegetable.name] = 0;
+          }
+          vegetableSales[vegetable.name] += item.quantity;
+        }
+      });
+    });
+
+    // Sort vegetables by sales
+    const sortedVegetables = Object.entries(vegetableSales)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+
+    // Create simple bar chart
+    const maxSales = Math.max(...sortedVegetables.map(v => v[1]));
+
+    sortedVegetables.forEach(([name, sales], index) => {
+      const percentage = (sales / maxSales) * 100;
+      const barColor = `hsl(${120 + index * 30}, 70%, 60%)`;
+
+      const barContainer = document.createElement('div');
+      barContainer.style.display = 'flex';
+      barContainer.style.alignItems = 'center';
+      barContainer.style.marginBottom = '10px';
+
+      const label = document.createElement('div');
+      label.style.width = '80px';
+      label.style.whiteSpace = 'nowrap';
+      label.style.overflow = 'hidden';
+      label.style.textOverflow = 'ellipsis';
+      label.textContent = name;
+
+      const barWrapper = document.createElement('div');
+      barWrapper.style.flex = '1';
+      barWrapper.style.marginLeft = '10px';
+      barWrapper.style.background = 'rgba(255, 255, 255, 0.2)';
+      barWrapper.style.borderRadius = '4px';
+      barWrapper.style.overflow = 'hidden';
+
+      const bar = document.createElement('div');
+      bar.style.height = '20px';
+      bar.style.width = `${percentage}%`;
+      bar.style.background = barColor;
+
+      const value = document.createElement('div');
+      value.style.marginLeft = '10px';
+      value.style.width = '40px';
+      value.textContent = `${sales}kg`;
+
+      barWrapper.appendChild(bar);
+      barContainer.appendChild(label);
+      barContainer.appendChild(barWrapper);
+      barContainer.appendChild(value);
+
+      topVegetablesChart.appendChild(barContainer);
+    });
+
+    if (sortedVegetables.length === 0) {
+      topVegetablesChart.innerHTML = '<div style="text-align: center; padding: 20px;">No sales data available</div>';
+    }
+  }
+
+  // Generate Sales Trend Chart
+  function generateSalesTrendChart() {
+    const salesTrendChart = document.getElementById('salesTrendChart');
+    salesTrendChart.innerHTML = '';
+
+    // Group orders by date
+    const salesByDate = {};
+    data.orders.forEach(order => {
+      const date = new Date(order.orderDate).toLocaleDateString();
+      if (!salesByDate[date]) {
+        salesByDate[date] = 0;
+      }
+
+      order.items.forEach(item => {
+        salesByDate[date] += item.price;
+      });
+    });
+
+    // Convert to array and sort by date
+    const salesData = Object.entries(salesByDate)
+      .map(([date, amount]) => ({ date, amount }))
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .slice(-7); // Last 7 days
+
+    if (salesData.length === 0) {
+      salesTrendChart.innerHTML = '<div style="text-align: center; padding: 20px;">No sales data available</div>';
+      return;
+    }
+
+    // Create simple line chart
+    const maxAmount = Math.max(...salesData.map(d => d.amount));
+    const chartHeight = 150;
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', chartHeight);
+    svg.style.overflow = 'visible';
+
+    // Create line path
+    let pathData = '';
+    salesData.forEach((data, index) => {
+      const x = (index / (salesData.length - 1)) * 100;
+      const y = chartHeight - (data.amount / maxAmount) * chartHeight;
+
+      if (index === 0) {
+        pathData += `M ${x} ${y}`;
+      } else {
+        pathData += ` L ${x} ${y}`;
+      }
+    });
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', pathData);
+    path.setAttribute('stroke', 'white');
+    path.setAttribute('stroke-width', '3');
+    path.setAttribute('fill', 'none');
+
+    svg.appendChild(path);
+
+    // Add dots for data points
+    salesData.forEach((data, index) => {
+      const x = (index / (salesData.length - 1)) * 100;
+      const y = chartHeight - (data.amount / maxAmount) * chartHeight;
+
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', x);
+      circle.setAttribute('cy', y);
+      circle.setAttribute('r', '4');
+      circle.setAttribute('fill', 'white');
+
+      svg.appendChild(circle);
+
+      // Add labels
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', x);
+      text.setAttribute('y', chartHeight + 20);
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('fill', 'rgba(255,255,255,0.7)');
+      text.setAttribute('font-size', '10px');
+      text.textContent = data.date.split('/').slice(0, 2).join('/');
+
+      svg.appendChild(text);
+
+      // Add value labels
+      const valueText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      valueText.setAttribute('x', x);
+      valueText.setAttribute('y', y - 10);
+      valueText.setAttribute('text-anchor', 'middle');
+      valueText.setAttribute('fill', 'white');
+      valueText.setAttribute('font-size', '10px');
+      valueText.textContent = `₹${data.amount.toFixed(0)}`;
+
+      svg.appendChild(valueText);
+    });
+
+    salesTrendChart.appendChild(svg);
+  }
+
+  // Generate Revenue by Customer Chart
+  function generateRevenueByCustomerChart() {
+    const revenueByCustomerChart = document.getElementById('revenueByCustomerChart');
+    revenueByCustomerChart.innerHTML = '';
+
+    // Calculate revenue by customer
+    const customerRevenue = {};
+    data.orders.forEach(order => {
+      const customerId = order.customerId;
+      const customer = data.customers.find(c => c.id === customerId);
+
+      if (customer) {
+        if (!customerRevenue[customer.name]) {
+          customerRevenue[customer.name] = 0;
+        }
+
+        order.items.forEach(item => {
+          customerRevenue[customer.name] += item.price;
+        });
+      }
+    });
+
+    // Sort customers by revenue
+    const sortedCustomers = Object.entries(customerRevenue)
+      .sort((a, b) => b[1] - a[1]);
+
+    if (sortedCustomers.length === 0) {
+      revenueByCustomerChart.innerHTML = '<div style="text-align: center; padding: 20px;">No revenue data available</div>';
+      return;
+    }
+
+    // Create simple horizontal bar chart
+    const totalRevenue = sortedCustomers.reduce((sum, [_, revenue]) => sum + revenue, 0);
+
+    const chart = document.createElement('div');
+    chart.style.display = 'flex';
+    chart.style.height = '100%';
+    chart.style.flexDirection = 'column';
+
+    sortedCustomers.forEach(([name, revenue], index) => {
+      const percentage = (revenue / totalRevenue) * 100;
+
+      const row = document.createElement('div');
+      row.style.display = 'flex';
+      row.style.alignItems = 'center';
+      row.style.marginBottom = '10px';
+
+      const label = document.createElement('div');
+      label.style.width = '100px';
+      label.style.whiteSpace = 'nowrap';
+      label.style.overflow = 'hidden';
+      label.style.textOverflow = 'ellipsis';
+      label.textContent = name;
+
+      const barContainer = document.createElement('div');
+      barContainer.style.flex = '1';
+      barContainer.style.marginLeft = '10px';
+      barContainer.style.background = 'rgba(255, 255, 255, 0.2)';
+      barContainer.style.borderRadius = '4px';
+      barContainer.style.overflow = 'hidden';
+
+      const bar = document.createElement('div');
+      bar.style.height = '20px';
+      bar.style.width = `${percentage}%`;
+      bar.style.background = `hsl(${210 + index * 40}, 70%, 60%)`;
+
+      const value = document.createElement('div');
+      value.style.marginLeft = '10px';
+      value.style.width = '80px';
+      value.textContent = `₹${revenue.toFixed(2)}`;
+
+      barContainer.appendChild(bar);
+      row.appendChild(label);
+      row.appendChild(barContainer);
+      row.appendChild(value);
+
+      chart.appendChild(row);
+    });
+
+    revenueByCustomerChart.appendChild(chart);
+  }
+
+  // Customer functions
+  function loadCustomers() {
+    const tbody = document.querySelector('#customersTable tbody');
+    tbody.innerHTML = '';
+
+    data.customers.forEach(customer => {
+      const orderCount = data.orders.filter(order => order.customerId === customer.id).length;
+      const row = `
+                    <tr>
+                        <td>${customer.id}</td>
+                        <td>${customer.name}</td>
+                    <td>${customer.email}</td>
+                        <td>${customer.address || 'N/A'}</td>
+                        <td>${orderCount}</td>
+                        <td>
+                          <button class="btn btn-warning" onclick="editCustomer(${customer.id})">Edit</button>
+                          <button class="btn btn-danger" onclick="deleteCustomer(${customer.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+      tbody.innerHTML += row;
+    });
+  }
+
+  // Add or update customer
+  document.getElementById('customerForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const id = document.getElementById('customerId').value;
+    const name = document.getElementById('customerName').value.trim();
+    const email = document.getElementById('customerEmail').value.trim();
+    const address = document.getElementById('customerAddress').value.trim();
+
+    if (!id) {
+      // Add new customer
+      data.customers.push({ id: nextIds.customer++, name, email, address });
+      document.getElementById('customerSuccess').textContent = 'Customer added successfully!';
+    } else {
+      // Update existing customer
+      const customer = data.customers.find(customer => customer.id === Number(id));
+      if (customer) {
+        customer.name = name;
+        customer.email = email;
+        customer.address = address;
+        document.getElementById('customerSuccess').textContent = 'Customer updated successfully!';
+      }
+    }
+
+    document.getElementById('customerSuccess').style.display = 'block';
+    setTimeout(() => document.getElementById('customerSuccess').style.display = 'none', 3000);
+    closeModal('customerModal');
+    loadCustomers();
+  });
+
+  function editCustomer(id) {
+    const customer = data.customers.find(customer => customer.id === id);
+    if (customer) {
+      document.getElementById('customerId').value = customer.id;
+      document.getElementById('customerName').value = customer.name;
+      document.getElementById('customerEmail').value = customer.email;
+      document.getElementById('customerAddress').value = customer.address || '';
+      document.getElementById('customerModalTitle').textContent = 'Edit Customer';
+      openModal('customerModal');
+    }
+  }
+
+  function deleteCustomer(id) {
+    if (confirm('Are you sure you want to delete this customer?')) {
+      data.customers = data.customers.filter(customer => customer.id !== id);
+      loadCustomers();
+    }
+  }
+
+  // Vegetable functions
+  function loadVegetables() {
+    const tbody = document.querySelector('#vegetablesTable tbody');
+    tbody.innerHTML = '';
+
+    data.vegetables.forEach(vegetable => {
+      const suppliers = vegetable.supplierIds.map(id => {
+        const supplier = data.suppliers.find(s => s.id === id);
+        return supplier ? supplier.name : 'Unknown';
+      }).join(', ');
+
+      const row = `
+                    <tr>
+                        <td>${vegetable.id}</td>
+                        <td>${vegetable.name}</td>
+                        <td>${vegetable.price.toFixed(2)}</td>
+                        <td>${vegetable.stock}</td>
+                        <td>${suppliers || 'None'}</td>
+                        <td>
+                          <button class="btn btn-warning" onclick="editVegetable(${vegetable.id})">Edit</button>
+                          <button class="btn btn-danger" onclick="deleteVegetable(${vegetable.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+      tbody.innerHTML += row;
+    });
+  }
+
+  // Add or update vegetable
+  document.getElementById('vegetableForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const id = document.getElementById('vegetableId').value;
+    const name = document.getElementById('vegetableName').value.trim();
+    const price = parseFloat(document.getElementById('vegetablePrice').value);
+    const stock = parseInt(document.getElementById('vegetableStock').value);
+
+    // Get selected suppliers
+    const select = document.getElementById('vegetableSuppliers');
+    const supplierIds = Array.from(select.selectedOptions).map(option => Number(option.value));
+
+    if (!id) {
+      // Add new vegetable
+      data.vegetables.push({ id: nextIds.vegetable++, name, price, stock, supplierIds });
+      document.getElementById('vegetableSuccess').textContent = 'Vegetable added successfully!';
+    } else {
+      // Update existing vegetable
+      const vegetable = data.vegetables.find(vegetable => vegetable.id === Number(id));
+      if (vegetable) {
+        vegetable.name = name;
+        vegetable.price = price;
+        vegetable.stock = stock;
+        vegetable.supplierIds = supplierIds;
+        document.getElementById('vegetableSuccess').textContent = 'Vegetable updated successfully!';
+      }
+    }
+
+    document.getElementById('vegetableSuccess').style.display = 'block';
+    setTimeout(() => document.getElementById('vegetableSuccess').style.display = 'none', 3000);
+    closeModal('vegetableModal');
+    loadVegetables();
+  });
+
+  function editVegetable(id) {
+    const vegetable = data.vegetables.find(vegetable => vegetable.id === id);
+    if (vegetable) {
+      document.getElementById('vegetableId').value = vegetable.id;
+      document.getElementById('vegetableName').value = vegetable.name;
+      document.getElementById('vegetablePrice').value = vegetable.price;
+      document.getElementById('vegetableStock').value = vegetable.stock;
+      document.getElementById('vegetableModalTitle').textContent = 'Edit Vegetable';
+
+      // Load suppliers and select the ones associated with this vegetable
+      loadSuppliersForVegetable();
+      const select = document.getElementById('vegetableSuppliers');
+      for (let i = 0; i < select.options.length; i++) {
+        select.options[i].selected = vegetable.supplierIds.includes(Number(select.options[i].value));
+      }
+
+      openModal('vegetableModal');
+    }
+  }
+
+  function deleteVegetable(id) {
+    if (confirm('Are you sure you want to delete this vegetable?')) {
+      data.vegetables = data.vegetables.filter(vegetable => vegetable.id !== id);
+      loadVegetables();
+    }
+  }
+
+  // Load suppliers in Vegetable Modal
+  function loadSuppliersForVegetable() {
+    const select = document.getElementById('vegetableSuppliers');
+    select.innerHTML = '';
+    data.suppliers.forEach(supplier => {
+      const option = document.createElement('option');
+      option.value = supplier.id;
+      option.textContent = supplier.name;
+      select.appendChild(option);
+    });
+  }
+
+  // Supplier functions
+  function loadSuppliers() {
+    const tbody = document.querySelector('#suppliersTable tbody');
+    tbody.innerHTML = '';
+
+    data.suppliers.forEach(supplier => {
+      const vegetables = data.vegetables
+        .filter(vegetable => vegetable.supplierIds.includes(supplier.id))
+        .map(vegetable => vegetable.name)
+        .join(', ');
+
+      const row = `
+                    <tr>
+                        <td>${supplier.id}</td>
+                        <td>${supplier.name}</td>
+                        <td>${supplier.contact || 'N/A'}</td>
+                        <td>${vegetables || 'None'}</td>
+                        <td>
+                          <button class="btn btn-warning" onclick="editSupplier(${supplier.id})">Edit</button>
+                          <button class="btn btn-danger" onclick="deleteSupplier(${supplier.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+      tbody.innerHTML += row;
+    });
+
+    // Load supplier orders
+    loadSupplierOrders();
+  }
+
+  // Load supplier orders
+  function loadSupplierOrders() {
+    const tbody = document.querySelector('#supplierOrdersTable tbody');
+    tbody.innerHTML = '';
+
+    data.supplierOrders.forEach(order => {
+      const supplier = data.suppliers.find(s => s.id === order.supplierId);
+      const supplierName = supplier ? supplier.name : 'Unknown';
+
+      // Calculate total amount
+      const totalAmount = order.items.reduce((sum, item) => sum + item.price, 0);
+
+      // Status badge styling
+      let statusClass = '';
+      switch(order.status) {
+        case 'Pending':
+          statusClass = 'background: #FFC107; color: #000;';
+          break;
+        case 'Processing':
+          statusClass = 'background: #2196F3; color: #fff;';
+          break;
+        case 'Shipped':
+          statusClass = 'background: #9C27B0; color: #fff;';
+          break;
+        case 'Delivered':
+          statusClass = 'background: #4CAF50; color: #fff;';
+          break;
+        case 'Cancelled':
+          statusClass = 'background: #F44336; color: #fff;';
+          break;
+        default:
+          statusClass = 'background: #9E9E9E; color: #fff;';
+      }
+
+      const row = `
+                    <tr>
+                        <td>${order.id}</td>
+                        <td>${supplierName}</td>
+                        <td>${new Date(order.orderDate).toLocaleString()}</td>
+                        <td>${order.items.length}</td>
+                        <td>₹${totalAmount.toFixed(2)}</td>
+                        <td><span style="padding: 5px 10px; border-radius: 15px; ${statusClass}">${order.status || 'N/A'}</span></td>
+                        <td>
+                          <button class="btn btn-secondary" onclick="viewSupplierOrderDetails(${order.id})">View Details</button>
+                          <button class="btn btn-warning" onclick="updateSupplierOrderStatus(${order.id})">Update Status</button>
+                          <button class="btn btn-danger" onclick="deleteSupplierOrder(${order.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+      tbody.innerHTML += row;
+    });
+  }
+
+  // View supplier order details
+  function viewSupplierOrderDetails(id) {
+    const order = data.supplierOrders.find(order => order.id === id);
+    if (order) {
+      const supplier = data.suppliers.find(s => s.id === order.supplierId);
+      const supplierName = supplier ? supplier.name : 'Unknown';
+
+      let itemsHtml = '';
+      let totalAmount = 0;
+
+      order.items.forEach(item => {
+        const vegetable = data.vegetables.find(v => v.id === item.vegetableId);
+        const vegetableName = vegetable ? vegetable.name : 'Unknown';
+        totalAmount += item.price;
+
+        itemsHtml += `
+          <div class="order-item">
+            <div style="flex: 2;">${vegetableName}</div>
+            <div style="flex: 1;">${item.quantity} kg</div>
+            <div style="flex: 1; text-align: right;">₹${item.price.toFixed(2)}</div>
+          </div>
+        `;
+      });
+
+      // Status badge styling
+      let statusClass = '';
+      switch(order.status) {
+        case 'Pending':
+          statusClass = 'background: #FFC107; color: #000;';
+          break;
+        case 'Processing':
+          statusClass = 'background: #2196F3; color: #fff;';
+          break;
+        case 'Shipped':
+          statusClass = 'background: #9C27B0; color: #fff;';
+          break;
+        case 'Delivered':
+          statusClass = 'background: #4CAF50; color: #fff;';
+          break;
+        case 'Cancelled':
+          statusClass = 'background: #F44336; color: #fff;';
+          break;
+        default:
+          statusClass = 'background: #9E9E9E; color: #fff;';
+      }
+
+      const content = `
+        <div style="margin-bottom: 20px;">
+          <p><strong>Order ID:</strong> ${order.id}</p>
+          <p><strong>Supplier:</strong> ${supplierName}</p>
+          <p><strong>Date:</strong> ${new Date(order.orderDate).toLocaleString()}</p>
+          <p><strong>Status:</strong> <span style="padding: 5px 10px; border-radius: 15px; ${statusClass}">${order.status || 'N/A'}</span></p>
+        </div>
+
+        <h3>Order Items</h3>
+        <div class="order-items">
+          <div class="order-item" style="font-weight: bold;">
+            <div style="flex: 2;">Vegetable</div>
+            <div style="flex: 1;">Quantity</div>
+            <div style="flex: 1; text-align: right;">Price</div>
+          </div>
+          ${itemsHtml}
+          <div class="order-item" style="font-weight: bold; border-top: 2px solid #ddd; margin-top: 10px; padding-top: 10px;">
+            <div style="flex: 2;">Total</div>
+            <div style="flex: 1;"></div>
+            <div style="flex: 1; text-align: right;">₹${totalAmount.toFixed(2)}</div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('supplierOrderDetailsContent').innerHTML = content;
+      openModal('supplierOrderDetailsModal');
+    }
+  }
+
+  // Update supplier order status
+  function updateSupplierOrderStatus(id) {
+    const order = data.supplierOrders.find(order => order.id === id);
+    if (order) {
+      const currentStatus = order.status || 'Pending';
+      const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+
+      let html = '<div class="form-group"><label>Select Status</label><select id="newSupplierOrderStatus">';
+      statuses.forEach(status => {
+        html += `<option value="${status}" ${status === currentStatus ? 'selected' : ''}>${status}</option>`;
+      });
+      html += '</select></div>';
+
+      html += '<div style="text-align: right; margin-top: 20px;">';
+      html += '<button class="btn btn-primary" onclick="saveSupplierOrderStatus(' + id + ')">Save Status</button>';
+      html += '</div>';
+
+      document.getElementById('supplierOrderDetailsContent').innerHTML = html;
+      openModal('supplierOrderDetailsModal');
+    }
+  }
+
+  // Save updated supplier order status
+  function saveSupplierOrderStatus(id) {
+    const order = data.supplierOrders.find(order => order.id === id);
+    if (order) {
+      const newStatus = document.getElementById('newSupplierOrderStatus').value;
+      order.status = newStatus;
+
+      document.getElementById('supplierSuccess').textContent = 'Order status updated successfully!';
+      document.getElementById('supplierSuccess').style.display = 'block';
+      setTimeout(() => document.getElementById('supplierSuccess').style.display = 'none', 3000);
+
+      closeModal('supplierOrderDetailsModal');
+      loadSupplierOrders();
+    }
+  }
+
+  // Delete supplier order
+  function deleteSupplierOrder(id) {
+    if (confirm('Are you sure you want to delete this supplier order?')) {
+      data.supplierOrders = data.supplierOrders.filter(order => order.id !== id);
+      loadSupplierOrders();
+    }
+  }
+
+  // Load suppliers for bulk order
+  function loadSuppliersForBulkOrder() {
+    const select = document.getElementById('bulkOrderSupplier');
+    select.innerHTML = '<option value="">Choose a supplier...</option>';
+    data.suppliers.forEach(supplier => {
+      const option = document.createElement('option');
+      option.value = supplier.id;
+      option.textContent = supplier.name;
+      select.appendChild(option);
+    });
+  }
+
+  // Load vegetables for bulk order
+  function loadVegetablesForBulkOrder() {
+    const rows = document.querySelectorAll('.bulk-order-item-row');
+    rows.forEach(row => {
+      const select = row.querySelector('.bulk-order-vegetable');
+      const quantityInput = row.querySelector('.bulk-order-quantity');
+      const priceInput = row.querySelector('.bulk-order-price');
+
+      select.innerHTML = '<option value="">Choose vegetable...</option>';
+
+      // Get selected supplier
+      const supplierId = Number(document.getElementById('bulkOrderSupplier').value);
+
+      // Filter vegetables by supplier if a supplier is selected
+      let vegetablesToShow = data.vegetables;
+      if (supplierId) {
+        vegetablesToShow = data.vegetables.filter(v => v.supplierIds.includes(supplierId));
+      }
+
+      vegetablesToShow.forEach(vegetable => {
+        const option = document.createElement('option');
+        option.value = vegetable.id;
+        option.textContent = `${vegetable.name} - ₹${vegetable.price.toFixed(2)}`;
+        select.appendChild(option);
+      });
+
+      // Add event listeners for price calculation
+      function updatePrice() {
+        const vegetableId = Number(select.value);
+        const quantity = Number(quantityInput.value);
+
+        if (vegetableId && quantity) {
+          const vegetable = data.vegetables.find(v => v.id === vegetableId);
+          if (vegetable) {
+            // For bulk orders, apply a 20% discount
+            const price = vegetable.price * quantity * 0.8;
+            priceInput.value = price.toFixed(2);
+            updateBulkOrderTotal();
+          }
+        } else {
+          priceInput.value = '';
+        }
+      }
+
+      select.addEventListener('change', updatePrice);
+      quantityInput.addEventListener('input', updatePrice);
+    });
+
+    // Update supplier change event to reload vegetables
+    document.getElementById('bulkOrderSupplier').addEventListener('change', loadVegetablesForBulkOrder);
+  }
+
+  // Add another bulk order item row
+  function addBulkOrderItem() {
+    const bulkOrderItems = document.getElementById('bulkOrderItems');
+    const row = document.createElement('div');
+    row.className = 'bulk-order-item-row';
+    row.innerHTML = `
+        <div class="form-row">
+            <div class="form-group">
+                <label>Vegetable</label>
+                <select class="bulk-order-vegetable" required>
+                  <option value="">Choose vegetable...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Quantity (kg)</label>
+                <input type="number" class="bulk-order-quantity" min="1" value="10" required>
+            </div>
+            <div class="form-group">
+                <label>Price (₹)</label>
+                <input type="number" class="bulk-order-price" readonly>
+            </div>
+        </div>
+    `;
+    bulkOrderItems.appendChild(row);
+    loadVegetablesForBulkOrder();
+  }
+
+  // Update bulk order total
+  function updateBulkOrderTotal() {
+    const priceInputs = document.querySelectorAll('.bulk-order-price');
+    let total = 0;
+
+    priceInputs.forEach(input => {
+      if (input.value) {
+        total += parseFloat(input.value);
+      }
+    });
+
+    document.getElementById('bulkOrderTotal').textContent = total.toFixed(2);
+  }
+
+  // Create new bulk order
+  document.getElementById('bulkOrderForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const supplierId = Number(document.getElementById('bulkOrderSupplier').value);
+
+    if (!supplierId) {
+      alert('Please select a supplier');
+      return;
+    }
+
+    const orderItems = [];
+    let isValid = true;
+
+    document.querySelectorAll('.bulk-order-item-row').forEach(row => {
+      const vegetableId = Number(row.querySelector('.bulk-order-vegetable').value);
+      const quantity = Number(row.querySelector('.bulk-order-quantity').value);
+
+      if (!vegetableId || !quantity) {
+        isValid = false;
+        return;
+      }
+
+      const vegetable = data.vegetables.find(v => v.id === vegetableId);
+      if (vegetable) {
+        // For bulk orders, apply a 20% discount
+        const price = vegetable.price * quantity * 0.8;
+        orderItems.push({
+          vegetableId,
+          quantity,
+          price
+        });
+
+        // Update vegetable stock
+        vegetable.stock += quantity;
+      }
+    });
+
+    if (!isValid || orderItems.length === 0) {
+      alert('Please fill in all order items correctly');
+      return;
+    }
+
+    // Create new supplier order
+    const newOrder = {
+      id: nextIds.supplierOrder++,
+      supplierId,
+      orderDate: new Date().toISOString(),
+      status: 'Pending',
+      items: orderItems
+    };
+
+    data.supplierOrders.push(newOrder);
+
+    document.getElementById('supplierSuccess').textContent = 'Bulk order placed successfully!';
+    document.getElementById('supplierSuccess').style.display = 'block';
+    setTimeout(() => document.getElementById('supplierSuccess').style.display = 'none', 3000);
+
+    closeModal('bulkOrderModal');
+    loadSuppliers();
+  });
+
+  // Add or update supplier
+  document.getElementById('supplierForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const id = document.getElementById('supplierId').value;
+    const name = document.getElementById('supplierName').value.trim();
+    const contact = document.getElementById('supplierContact').value.trim();
+
+    if (!id) {
+      // Add new supplier
+      data.suppliers.push({ id: nextIds.supplier++, name, contact });
+      document.getElementById('supplierSuccess').textContent = 'Supplier added successfully!';
+    } else {
+      // Update existing supplier
+      const supplier = data.suppliers.find(supplier => supplier.id === Number(id));
+      if (supplier) {
+        supplier.name = name;
+        supplier.contact = contact;
+        document.getElementById('supplierSuccess').textContent = 'Supplier updated successfully!';
+      }
+    }
+
+    document.getElementById('supplierSuccess').style.display = 'block';
+    setTimeout(() => document.getElementById('supplierSuccess').style.display = 'none', 3000);
+    closeModal('supplierModal');
+    loadSuppliers();
+  });
+
+  function editSupplier(id) {
+    const supplier = data.suppliers.find(supplier => supplier.id === id);
+    if (supplier) {
+      document.getElementById('supplierId').value = supplier.id;
+      document.getElementById('supplierName').value = supplier.name;
+      document.getElementById('supplierContact').value = supplier.contact || '';
+      document.getElementById('supplierModalTitle').textContent = 'Edit Supplier';
+      openModal('supplierModal');
+    }
+  }
+
+  function deleteSupplier(id) {
+    if (confirm('Are you sure you want to delete this supplier?')) {
+      data.suppliers = data.suppliers.filter(supplier => supplier.id !== id);
+      loadSuppliers();
+    }
+  }
+
+  // Load customers in Order Modal
+  function loadCustomersForOrder() {
+    const select = document.getElementById('orderCustomer');
+    select.innerHTML = '<option value="">Choose a customer...</option>';
+    data.customers.forEach(customer => {
+      const option = document.createElement('option');
+      option.value = customer.id;
+      option.textContent = `${customer.name} (${customer.email})`;
+      select.appendChild(option);
+    });
+  }
+
+  // Load vegetables in Order Modal
+  function loadVegetablesForOrder() {
+    const rows = document.querySelectorAll('.order-item-row');
+    rows.forEach(row => {
+      const select = row.querySelector('.order-vegetable');
+      const quantityInput = row.querySelector('.order-quantity');
+      const priceInput = row.querySelector('.order-price');
+
+      select.innerHTML = '<option value="">Choose vegetable...</option>';
+      data.vegetables.forEach(vegetable => {
+        const option = document.createElement('option');
+        option.value = vegetable.id;
+        option.textContent = `${vegetable.name} - ₹${vegetable.price.toFixed(2)}`;
+        select.appendChild(option);
+      });
+
+      // Add event listeners for price calculation
+      function updatePrice() {
+        const vegetableId = Number(select.value);
+        const quantity = Number(quantityInput.value);
+
+        if (vegetableId && quantity) {
+          const vegetable = data.vegetables.find(v => v.id === vegetableId);
+          if (vegetable) {
+            const price = vegetable.price * quantity;
+            priceInput.value = price.toFixed(2);
+            updateOrderTotal();
+          }
+        } else {
+          priceInput.value = '';
+        }
+      }
+
+      select.addEventListener('change', updatePrice);
+      quantityInput.addEventListener('input', updatePrice);
+    });
+  }
+
+  // Order functions
+  function loadOrders() {
+    const tbody = document.querySelector('#ordersTable tbody');
+    tbody.innerHTML = '';
+
+    data.orders.forEach(order => {
+      const customer = data.customers.find(c => c.id === order.customerId);
+      const customerName = customer ? customer.name : 'Unknown';
+
+      // Calculate total amount
+      const totalAmount = order.items.reduce((sum, item) => sum + item.price, 0);
+
+      // Status badge styling
+      let statusClass = '';
+      switch(order.status) {
+        case 'Pending':
+          statusClass = 'background: #FFC107; color: #000;';
+          break;
+        case 'Processing':
+          statusClass = 'background: #2196F3; color: #fff;';
+          break;
+        case 'Shipped':
+          statusClass = 'background: #9C27B0; color: #fff;';
+          break;
+        case 'Delivered':
+          statusClass = 'background: #4CAF50; color: #fff;';
+          break;
+        case 'Cancelled':
+          statusClass = 'background: #F44336; color: #fff;';
+          break;
+        default:
+          statusClass = 'background: #9E9E9E; color: #fff;';
+      }
+
+      const row = `
+                    <tr>
+                        <td>${order.id}</td>
+                        <td>${customerName}</td>
+                        <td>${new Date(order.orderDate).toLocaleString()}</td>
+                        <td>${order.items.length}</td>
+                        <td>₹${totalAmount.toFixed(2)}</td>
+                        <td><span style="padding: 5px 10px; border-radius: 15px; ${statusClass}">${order.status || 'N/A'}</span></td>
+                        <td>
+                          <button class="btn btn-secondary" onclick="viewOrderDetails(${order.id})">View Details</button>
+                          <button class="btn btn-warning" onclick="updateOrderStatus(${order.id})">Update Status</button>
+                          <button class="btn btn-danger" onclick="deleteOrder(${order.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+      tbody.innerHTML += row;
+    });
+  }
+
+  // Update order status
+  function updateOrderStatus(id) {
+    const order = data.orders.find(order => order.id === id);
+    if (order) {
+      const currentStatus = order.status || 'Pending';
+      const statuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+
+      let html = '<div class="form-group"><label>Select Status</label><select id="newOrderStatus">';
+      statuses.forEach(status => {
+        html += `<option value="${status}" ${status === currentStatus ? 'selected' : ''}>${status}</option>`;
+      });
+      html += '</select></div>';
+
+      html += '<div style="text-align: right; margin-top: 20px;">';
+      html += '<button class="btn btn-primary" onclick="saveOrderStatus(' + id + ')">Save Status</button>';
+      html += '</div>';
+
+      document.getElementById('orderDetailsContent').innerHTML = html;
+      openModal('orderDetailsModal');
+    }
+  }
+
+  // Save updated order status
+  function saveOrderStatus(id) {
+    const order = data.orders.find(order => order.id === id);
+    if (order) {
+      const newStatus = document.getElementById('newOrderStatus').value;
+      order.status = newStatus;
+
+      document.getElementById('orderSuccess').textContent = 'Order status updated successfully!';
+      document.getElementById('orderSuccess').style.display = 'block';
+      setTimeout(() => document.getElementById('orderSuccess').style.display = 'none', 3000);
+
+      closeModal('orderDetailsModal');
+      loadOrders();
+    }
+  }
+
+  // View order details
+  function viewOrderDetails(id) {
+    const order = data.orders.find(order => order.id === id);
+    if (order) {
+      const customer = data.customers.find(c => c.id === order.customerId);
+      const customerName = customer ? customer.name : 'Unknown';
+
+      let itemsHtml = '';
+      let totalAmount = 0;
+
+      order.items.forEach(item => {
+        const vegetable = data.vegetables.find(v => v.id === item.vegetableId);
+        const vegetableName = vegetable ? vegetable.name : 'Unknown';
+        totalAmount += item.price;
+
+        itemsHtml += `
+          <div class="order-item">
+            <div style="flex: 2;">${vegetableName}</div>
+            <div style="flex: 1;">${item.quantity} kg</div>
+            <div style="flex: 1; text-align: right;">₹${item.price.toFixed(2)}</div>
+          </div>
+        `;
+      });
+
+      // Status badge styling
+      let statusClass = '';
+      switch(order.status) {
+        case 'Pending':
+          statusClass = 'background: #FFC107; color: #000;';
+          break;
+        case 'Processing':
+          statusClass = 'background: #2196F3; color: #fff;';
+          break;
+        case 'Shipped':
+          statusClass = 'background: #9C27B0; color: #fff;';
+          break;
+        case 'Delivered':
+          statusClass = 'background: #4CAF50; color: #fff;';
+          break;
+        case 'Cancelled':
+          statusClass = 'background: #F44336; color: #fff;';
+          break;
+        default:
+          statusClass = 'background: #9E9E9E; color: #fff;';
+      }
+
+      const content = `
+        <div style="margin-bottom: 20px;">
+          <p><strong>Order ID:</strong> ${order.id}</p>
+          <p><strong>Customer:</strong> ${customerName}</p>
+          <p><strong>Date:</strong> ${new Date(order.orderDate).toLocaleString()}</p>
+          <p><strong>Status:</strong> <span style="padding: 5px 10px; border-radius: 15px; ${statusClass}">${order.status || 'N/A'}</span></p>
+        </div>
+
+        <h3>Order Items</h3>
+        <div class="order-items">
+          <div class="order-item" style="font-weight: bold;">
+            <div style="flex: 2;">Vegetable</div>
+            <div style="flex: 1;">Quantity</div>
+            <div style="flex: 1; text-align: right;">Price</div>
+          </div>
+          ${itemsHtml}
+          <div class="order-item" style="font-weight: bold; border-top: 2px solid #ddd; margin-top: 10px; padding-top: 10px;">
+            <div style="flex: 2;">Total</div>
+            <div style="flex: 1;"></div>
+            <div style="flex: 1; text-align: right;">₹${totalAmount.toFixed(2)}</div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('orderDetailsContent').innerHTML = content;
+      openModal('orderDetailsModal');
+    }
+  }
+
+  // Delete order
+  function deleteOrder(id) {
+    if (confirm('Are you sure you want to delete this order?')) {
+      data.orders = data.orders.filter(order => order.id !== id);
+      loadOrders();
+    }
+  }
+
+  // Create new order
+  document.getElementById('orderForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const customerId = Number(document.getElementById('orderCustomer').value);
+
+    if (!customerId) {
+      document.getElementById('orderError').textContent = 'Please select a customer';
+      document.getElementById('orderError').style.display = 'block';
+      setTimeout(() => document.getElementById('orderError').style.display = 'none', 3000);
+      return;
+    }
+
+    const orderItems = [];
+    let isValid = true;
+
+    document.querySelectorAll('.order-item-row').forEach(row => {
+      const vegetableId = Number(row.querySelector('.order-vegetable').value);
+      const quantity = Number(row.querySelector('.order-quantity').value);
+
+      if (!vegetableId || !quantity) {
+        isValid = false;
+        return;
+      }
+
+      const vegetable = data.vegetables.find(v => v.id === vegetableId);
+      if (vegetable) {
+        const price = vegetable.price * quantity;
+        orderItems.push({
+          vegetableId,
+          quantity,
+          price
+        });
+      }
+    });
+
+    if (!isValid || orderItems.length === 0) {
+      document.getElementById('orderError').textContent = 'Please fill in all order items correctly';
+      document.getElementById('orderError').style.display = 'block';
+      setTimeout(() => document.getElementById('orderError').style.display = 'none', 3000);
+      return;
+    }
+
+    // Create new order
+    const newOrder = {
+      id: nextIds.order++,
+      customerId,
+      orderDate: new Date().toISOString(),
+      status: 'Pending',
+      items: orderItems
+    };
+
+    data.orders.push(newOrder);
+
+    document.getElementById('orderSuccess').textContent = 'Order created successfully!';
+    document.getElementById('orderSuccess').style.display = 'block';
+    setTimeout(() => document.getElementById('orderSuccess').style.display = 'none', 3000);
+
+    closeModal('orderModal');
+    loadOrders();
+  });
+
+  // Add another order item row
+  function addOrderItem() {
+    const orderItems = document.getElementById('orderItems');
+    const row = document.createElement('div');
+    row.className = 'order-item-row';
+    row.innerHTML = `
+        <div class="form-row">
+            <div class="form-group">
+                <label>Vegetable</label>
+                <select class="order-vegetable" required>
+                  <option value="">Choose vegetable...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Quantity (kg)</label>
+                <input type="number" class="order-quantity" min="1" value="1" required>
+            </div>
+            <div class="form-group">
+                <label>Price (₹)</label>
+                <input type="number" class="order-price" readonly>
+            </div>
+        </div>
+    `;
+    orderItems.appendChild(row);
+    loadVegetablesForOrder();
+
+    // Add event listeners for price calculation
+    const vegetableSelect = row.querySelector('.order-vegetable');
+    const quantityInput = row.querySelector('.order-quantity');
+    const priceInput = row.querySelector('.order-price');
+
+    function updatePrice() {
+      const vegetableId = Number(vegetableSelect.value);
+      const quantity = Number(quantityInput.value);
+
+      if (vegetableId && quantity) {
+        const vegetable = data.vegetables.find(v => v.id === vegetableId);
+        if (vegetable) {
+          const price = vegetable.price * quantity;
+          priceInput.value = price.toFixed(2);
+          updateOrderTotal();
+        }
+      } else {
+        priceInput.value = '';
+      }
+    }
+
+    vegetableSelect.addEventListener('change', updatePrice);
+    quantityInput.addEventListener('input', updatePrice);
+  }
+
+  // Update order total
+  function updateOrderTotal() {
+    const priceInputs = document.querySelectorAll('.order-price');
+    let total = 0;
+
+    priceInputs.forEach(input => {
+      if (input.value) {
+        total += parseFloat(input.value);
+      }
+    });
+
+    document.getElementById('orderTotal').textContent = total.toFixed(2);
+  }
+
+  // Data Insights visualization
+  function loadRelationships() {
+    // Generate business performance metrics charts
+    generateInventoryTurnoverChart();
+    generateCustomerRetentionChart();
+    generateSupplierPerformanceChart();
+    generateRevenueGrowthChart();
+
+    // Generate relationship visualization
+    generateRelationshipVisualization();
+  }
+
+  // Generate Inventory Turnover Chart
+  function generateInventoryTurnoverChart() {
+    const chart = document.getElementById('inventoryTurnoverChart');
+    chart.innerHTML = '';
+
+    // Calculate inventory turnover for each vegetable
+    const inventoryData = data.vegetables.map(vegetable => {
+      // Calculate total quantity sold
+      let quantitySold = 0;
+      data.orders.forEach(order => {
+        order.items.forEach(item => {
+          if (item.vegetableId === vegetable.id) {
+            quantitySold += item.quantity;
+          }
+        });
+      });
+
+      // Calculate turnover ratio (quantity sold / current stock)
+      const turnoverRatio = vegetable.stock > 0 ? quantitySold / vegetable.stock : 0;
+
+      return {
+        name: vegetable.name,
+        turnover: turnoverRatio
+      };
+    });
+
+    // Sort by turnover ratio
+    inventoryData.sort((a, b) => b.turnover - a.turnover);
+
+    // Create simple gauge chart for each vegetable
+    const container = document.createElement('div');
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.gap = '10px';
+
+    inventoryData.forEach(item => {
+      const row = document.createElement('div');
+      row.style.display = 'flex';
+      row.style.alignItems = 'center';
+
+      const label = document.createElement('div');
+      label.style.width = '80px';
+      label.style.fontSize = '12px';
+      label.style.whiteSpace = 'nowrap';
+      label.style.overflow = 'hidden';
+      label.style.textOverflow = 'ellipsis';
+      label.textContent = item.name;
+
+      const gaugeContainer = document.createElement('div');
+      gaugeContainer.style.flex = '1';
+      gaugeContainer.style.height = '8px';
+      gaugeContainer.style.background = 'rgba(255, 255, 255, 0.2)';
+      gaugeContainer.style.borderRadius = '4px';
+      gaugeContainer.style.marginLeft = '10px';
+      gaugeContainer.style.position = 'relative';
+
+      // Cap turnover at 2.0 for visualization purposes
+      const cappedTurnover = Math.min(item.turnover, 2);
+      const percentage = (cappedTurnover / 2) * 100;
+
+      const gauge = document.createElement('div');
+      gauge.style.position = 'absolute';
+      gauge.style.left = '0';
+      gauge.style.top = '0';
+      gauge.style.height = '100%';
+      gauge.style.width = `${percentage}%`;
+      gauge.style.background = percentage > 50 ? '#4CAF50' : '#FFC107';
+      gauge.style.borderRadius = '4px';
+
+      const value = document.createElement('div');
+      value.style.marginLeft = '10px';
+      value.style.fontSize = '12px';
+      value.textContent = item.turnover.toFixed(2);
+
+      gaugeContainer.appendChild(gauge);
+      row.appendChild(label);
+      row.appendChild(gaugeContainer);
+      row.appendChild(value);
+
+      container.appendChild(row);
+    });
+
+    if (inventoryData.length === 0) {
+      chart.innerHTML = '<div style="text-align: center; color: white;">No inventory data available</div>';
+    } else {
+      chart.appendChild(container);
+    }
+  }
+
+  // Generate Customer Retention Chart
+  function generateCustomerRetentionChart() {
+    const chart = document.getElementById('customerRetentionChart');
+    chart.innerHTML = '';
+
+    // Calculate orders per customer
+    const customerOrders = {};
+    data.customers.forEach(customer => {
+      customerOrders[customer.id] = data.orders.filter(order => order.customerId === customer.id).length;
+    });
+
+    // Create pie chart
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('height', '100%');
+    svg.setAttribute('viewBox', '0 0 100 100');
+
+    // Group customers by order count
+    const orderGroups = {
+      'No orders': 0,
+      '1 order': 0,
+      '2-3 orders': 0,
+      '4+ orders': 0
+    };
+
+    Object.values(customerOrders).forEach(count => {
+      if (count === 0) orderGroups['No orders']++;
+      else if (count === 1) orderGroups['1 order']++;
+      else if (count <= 3) orderGroups['2-3 orders']++;
+      else orderGroups['4+ orders']++;
+    });
+
+    // Create pie chart
+    let startAngle = 0;
+    const colors = ['#FF5252', '#FFC107', '#2196F3', '#4CAF50'];
+    const total = Object.values(orderGroups).reduce((sum, count) => sum + count, 0);
+
+    Object.entries(orderGroups).forEach(([label, count], index) => {
+      if (count === 0) return;
+
+      const percentage = count / total;
+      const endAngle = startAngle + percentage * 360;
+
+      // Calculate path
+      const x1 = 50 + 40 * Math.cos(Math.PI * startAngle / 180);
+      const y1 = 50 + 40 * Math.sin(Math.PI * startAngle / 180);
+      const x2 = 50 + 40 * Math.cos(Math.PI * endAngle / 180);
+      const y2 = 50 + 40 * Math.sin(Math.PI * endAngle / 180);
+
+      const largeArcFlag = percentage > 0.5 ? 1 : 0;
+
+      const pathData = [
+        `M 50 50`,
+        `L ${x1} ${y1}`,
+        `A 40 40 0 ${largeArcFlag} 1 ${x2} ${y2}`,
+        'Z'
+      ].join(' ');
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', pathData);
+      path.setAttribute('fill', colors[index]);
+
+      svg.appendChild(path);
+
+      // Add label
+      const labelAngle = startAngle + (percentage * 360) / 2;
+      const labelRadius = 25;
+      const labelX = 50 + labelRadius * Math.cos(Math.PI * labelAngle / 180);
+      const labelY = 50 + labelRadius * Math.sin(Math.PI * labelAngle / 180);
+
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', labelX);
+      text.setAttribute('y', labelY);
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('fill', 'white');
+      text.setAttribute('font-size', '8px');
+      text.textContent = `${Math.round(percentage * 100)}%`;
+
+      svg.appendChild(text);
+
+      startAngle = endAngle;
+    });
+
+    // Add legend
+    const legend = document.createElement('div');
+    legend.style.display = 'flex';
+    legend.style.flexWrap = 'wrap';
+    legend.style.justifyContent = 'center';
+    legend.style.marginTop = '10px';
+
+    Object.entries(orderGroups).forEach(([label, count], index) => {
+      if (count === 0) return;
+
+      const item = document.createElement('div');
+      item.style.display = 'flex';
+      item.style.alignItems = 'center';
+      item.style.margin = '0 5px';
+
+      const colorBox = document.createElement('div');
+      colorBox.style.width = '10px';
+      colorBox.style.height = '10px';
+      colorBox.style.background = colors[index];
+      colorBox.style.marginRight = '5px';
+
+      const text = document.createElement('span');
+      text.style.fontSize = '10px';
+      text.textContent = label;
+
+      item.appendChild(colorBox);
+      item.appendChild(text);
+      legend.appendChild(item);
+    });
+
+    chart.appendChild(svg);
+    chart.appendChild(legend);
+  }
+
+  // Generate Supplier Performance Chart
+  function generateSupplierPerformanceChart() {
+    const chart = document.getElementById('supplierPerformanceChart');
+    chart.innerHTML = '';
+
+    // Calculate supplier performance metrics
+    const supplierMetrics = data.suppliers.map(supplier => {
+      // Count vegetables supplied
+      const vegetablesCount = data.vegetables.filter(v => v.supplierIds.includes(supplier.id)).length;
+
+      // Calculate total sales from this supplier's vegetables
+      let totalSales = 0;
+      data.orders.forEach(order => {
+        order.items.forEach(item => {
+          const vegetable = data.vegetables.find(v => v.id === item.vegetableId);
+          if (vegetable && vegetable.supplierIds.includes(supplier.id)) {
+            totalSales += item.price;
+          }
+        });
+      });
+
+      return {
+        name: supplier.name,
+        vegetablesCount,
+        totalSales
+      };
+    });
+
+    // Sort by total sales
+    supplierMetrics.sort((a, b) => b.totalSales - a.totalSales);
+
+    // Create radar chart (simplified as bar chart)
+    const container = document.createElement('div');
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.gap = '15px';
+
+    supplierMetrics.forEach(metric => {
+      const row = document.createElement('div');
+
+      const header = document.createElement('div');
+      header.style.fontWeight = 'bold';
+      header.style.marginBottom = '5px';
+      header.textContent = metric.name;
+
+      const barsContainer = document.createElement('div');
+      barsContainer.style.display = 'flex';
+      barsContainer.style.gap = '10px';
+
+      // Sales bar
+      const salesContainer = document.createElement('div');
+      salesContainer.style.flex = '1';
+
+      const salesLabel = document.createElement('div');
+      salesLabel.style.fontSize = '10px';
+      salesLabel.style.marginBottom = '2px';
+      salesLabel.textContent = 'Sales';
+
+      const salesBarContainer = document.createElement('div');
+      salesBarContainer.style.height = '8px';
+      salesBarContainer.style.background = 'rgba(255, 255, 255, 0.2)';
+      salesBarContainer.style.borderRadius = '4px';
+
+      // Normalize sales (max 10000 for visualization)
+      const salesPercentage = Math.min(metric.totalSales / 10000, 1) * 100;
+
+      const salesBar = document.createElement('div');
+      salesBar.style.height = '100%';
+      salesBar.style.width = `${salesPercentage}%`;
+      salesBar.style.background = '#4CAF50';
+      salesBar.style.borderRadius = '4px';
+
+      salesBarContainer.appendChild(salesBar);
+      salesContainer.appendChild(salesLabel);
+      salesContainer.appendChild(salesBarContainer);
+
+      // Variety bar
+      const varietyContainer = document.createElement('div');
+      varietyContainer.style.flex = '1';
+
+      const varietyLabel = document.createElement('div');
+      varietyLabel.style.fontSize = '10px';
+      varietyLabel.style.marginBottom = '2px';
+      varietyLabel.textContent = 'Variety';
+
+      const varietyBarContainer = document.createElement('div');
+      varietyBarContainer.style.height = '8px';
+      varietyBarContainer.style.background = 'rgba(255, 255, 255, 0.2)';
+      varietyBarContainer.style.borderRadius = '4px';
+
+      // Normalize variety (max 10 for visualization)
+      const varietyPercentage = Math.min(metric.vegetablesCount / 10, 1) * 100;
+
+      const varietyBar = document.createElement('div');
+      varietyBar.style.height = '100%';
+      varietyBar.style.width = `${varietyPercentage}%`;
+      varietyBar.style.background = '#2196F3';
+      varietyBar.style.borderRadius = '4px';
+
+      varietyBarContainer.appendChild(varietyBar);
+      varietyContainer.appendChild(varietyLabel);
+      varietyContainer.appendChild(varietyBarContainer);
+
+      barsContainer.appendChild(salesContainer);
+      barsContainer.appendChild(varietyContainer);
+
+      row.appendChild(header);
+      row.appendChild(barsContainer);
+      container.appendChild(row);
+    });
+
+    if (supplierMetrics.length === 0) {
+      chart.innerHTML = '<div style="text-align: center; color: white;">No supplier data available</div>';
+    } else {
+      chart.appendChild(container);
+    }
+  }
+
+  // Generate Revenue Growth Chart
+  function generateRevenueGrowthChart() {
+    const chart = document.getElementById('revenueGrowthChart');
+    chart.innerHTML = '';
+
+    // Group orders by month
+    const monthlyRevenue = {};
+
+    data.orders.forEach(order => {
+      const date = new Date(order.orderDate);
+      const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
+
+      if (!monthlyRevenue[monthKey]) {
+        monthlyRevenue[monthKey] = 0;
+      }
+
+      order.items.forEach(item => {
+        monthlyRevenue[monthKey] += item.price;
+      });
+    });
+
+    // Convert to array and sort by date
+    const revenueData = Object.entries(monthlyRevenue)
+      .map(([month, amount]) => {
+        const [year, monthNum] = month.split('-').map(Number);
+        return {
+          month,
+          amount,
+          label: new Date(year, monthNum - 1).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })
+        };
+      })
+      .sort((a, b) => {
+        const [aYear, aMonth] = a.month.split('-').map(Number);
+        const [bYear, bMonth] = b.month.split('-').map(Number);
+        return (aYear * 12 + aMonth) - (bYear * 12 + bMonth);
+      });
+
+    if (revenueData.length < 2) {
+      chart.innerHTML = '<div style="text-align: center; color: white;">Not enough data for growth analysis</div>';
+      return;
+    }
+
+    // Calculate growth rates
+    const growthData = [];
+    for (let i = 1; i < revenueData.length; i++) {
+      const prevRevenue = revenueData[i-1].amount;
+      const currentRevenue = revenueData[i].amount;
+
+      if (prevRevenue > 0) {
+        const growthRate = ((currentRevenue - prevRevenue) / prevRevenue) * 100;
+        growthData.push({
+          label: revenueData[i].label,
+          growth: growthRate
+        });
+      }
+    }
+
+    // Create bar chart for growth rates
+    const container = document.createElement('div');
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.gap = '10px';
+
+    growthData.forEach(data => {
+      const row = document.createElement('div');
+      row.style.display = 'flex';
+      row.style.alignItems = 'center';
+
+      const label = document.createElement('div');
+      label.style.width = '80px';
+      label.style.fontSize = '12px';
+      label.textContent = data.label;
+
+      const barContainer = document.createElement('div');
+      barContainer.style.flex = '1';
+      barContainer.style.height = '20px';
+      barContainer.style.background = 'rgba(255, 255, 255, 0.2)';
+      barContainer.style.borderRadius = '4px';
+      barContainer.style.marginLeft = '10px';
+      barContainer.style.position = 'relative';
+      barContainer.style.overflow = 'hidden';
+
+      // Center line (0%)
+      const centerLine = document.createElement('div');
+      centerLine.style.position = 'absolute';
+      centerLine.style.left = '50%';
+      centerLine.style.top = '0';
+      centerLine.style.height = '100%';
+      centerLine.style.width = '1px';
+      centerLine.style.background = 'rgba(255, 255, 255, 0.5)';
+
+      const bar = document.createElement('div');
+      bar.style.position = 'absolute';
+      bar.style.top = '0';
+      bar.style.height = '100%';
+
+      // Positive or negative growth
+      if (data.growth >= 0) {
+        bar.style.left = '50%';
+        bar.style.width = `${Math.min(data.growth, 100) / 2}%`;
+        bar.style.background = '#4CAF50';
+      } else {
+        const width = Math.min(Math.abs(data.growth), 100) / 2;
+        bar.style.right = '50%';
+        bar.style.width = `${width}%`;
+        bar.style.background = '#F44336';
+      }
+
+      const value = document.createElement('div');
+      value.style.marginLeft = '10px';
+      value.style.fontSize = '12px';
+      value.textContent = `${data.growth > 0 ? '+' : ''}${data.growth.toFixed(1)}%`;
+
+      barContainer.appendChild(centerLine);
+      barContainer.appendChild(bar);
+
+      row.appendChild(label);
+      row.appendChild(barContainer);
+      row.appendChild(value);
+
+      container.appendChild(row);
+    });
+
+    if (growthData.length === 0) {
+      chart.innerHTML = '<div style="text-align: center; color: white;">Not enough data for growth analysis</div>';
+    } else {
+      chart.appendChild(container);
+    }
+  }
+
+  // Generate relationship visualization
+  function generateRelationshipVisualization() {
+    const relationshipView = document.getElementById('relationshipView');
+
+    // Create HTML for relationship visualization
+    let html = `
+      <div style="background: white; padding: 25px; border-radius: 10px; margin-bottom: 20px;">
+        <h3 style="color: #333; margin-bottom: 20px;">🔍 Data Relationship Analysis</h3>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+          <!-- Customer Analysis -->
+          <div style="background: linear-gradient(135deg, #1976d2 0%, #64b5f6 100%); padding: 20px; border-radius: 10px; color: white;">
+            <h4>👥 Customer Analysis</h4>
+            <p style="margin: 10px 0;">Average Orders per Customer: <strong>${(data.orders.length / Math.max(data.customers.length, 1)).toFixed(1)}</strong></p>
+
+            <div style="margin-top: 15px;">
+              <h5>Top Customers by Order Value:</h5>
+              <ul style="list-style-type: none; padding: 0; margin: 10px 0;">
+    `;
+
+    // Calculate customer total order values
+    const customerValues = {};
+    data.orders.forEach(order => {
+      const customerId = order.customerId;
+      if (!customerValues[customerId]) customerValues[customerId] = 0;
+
+      order.items.forEach(item => {
+        customerValues[customerId] += item.price;
+      });
+    });
+
+    // Sort and get top 3 customers
+    const topCustomers = Object.entries(customerValues)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3);
+
+    topCustomers.forEach(([customerId, value]) => {
+      const customer = data.customers.find(c => c.id === Number(customerId));
+      if (customer) {
+        html += `<li style="padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.2);">${customer.name} - ₹${value.toFixed(2)}</li>`;
+      }
+    });
+
+    html += `
+              </ul>
+            </div>
+          </div>
+
+          <!-- Vegetable Analysis -->
+          <div style="background: linear-gradient(135deg, #388e3c 0%, #81c784 100%); padding: 20px; border-radius: 10px; color: white;">
+            <h4>🥕 Vegetable Analysis</h4>
+            <p style="margin: 10px 0;">Total Stock Value: <strong>₹${data.vegetables.reduce((sum, v) => sum + (v.price * v.stock), 0).toFixed(2)}</strong></p>
+
+            <div style="margin-top: 15px;">
+              <h5>Most Popular Vegetables:</h5>
+              <ul style="list-style-type: none; padding: 0; margin: 10px 0;">
+    `;
+
+    // Calculate vegetable popularity
+    const vegetablePopularity = {};
+    data.orders.forEach(order => {
+      order.items.forEach(item => {
+        const vegetableId = item.vegetableId;
+        if (!vegetablePopularity[vegetableId]) vegetablePopularity[vegetableId] = 0;
+        vegetablePopularity[vegetableId] += item.quantity;
+      });
+    });
+
+    // Sort and get top 3 vegetables
+    const topVegetables = Object.entries(vegetablePopularity)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3);
+
+    topVegetables.forEach(([vegetableId, quantity]) => {
+      const vegetable = data.vegetables.find(v => v.id === Number(vegetableId));
+      if (vegetable) {
+        html += `<li style="padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.2);">${vegetable.name} - ${quantity}kg sold</li>`;
+      }
+    });
+
+    html += `
+              </ul>
+            </div>
+          </div>
+
+          <!-- Supplier Analysis -->
+          <div style="background: linear-gradient(135deg, #f57c00 0%, #ffb74d 100%); padding: 20px; border-radius: 10px; color: white;">
+            <h4>🚛 Supplier Analysis</h4>
+            <p style="margin: 10px 0;">Average Vegetables per Supplier: <strong>${(data.vegetables.length / Math.max(data.suppliers.length, 1)).toFixed(1)}</strong></p>
+
+            <div style="margin-top: 15px;">
+              <h5>Supplier Contribution:</h5>
+              <ul style="list-style-type: none; padding: 0; margin: 10px 0;">
+    `;
+
+    // Calculate supplier contribution
+    data.suppliers.forEach(supplier => {
+      const suppliedVegetables = data.vegetables.filter(v => v.supplierIds.includes(supplier.id));
+      const percentage = (suppliedVegetables.length / Math.max(data.vegetables.length, 1)) * 100;
+
+      html += `<li style="padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.2);">${supplier.name} - ${percentage.toFixed(1)}% of inventory</li>`;
+    });
+
+    html += `
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    relationshipView.innerHTML = html;
+  }
+
+  loadDashboard();
+</script>
+</body>
+</html>
